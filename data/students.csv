@@ -1,0 +1,44 @@
+student_id,full_name,cccd,mail,phone,gender,university,birth_day,major
+1,Hoàng Văn Phi,001204028784,hoangvanphi2004@gmail.com,0369806768,M,UET,20040421,DevOps Engineering
+2,Hoàng Minh Quang,036203002537,quangh2023@gmail.com,0350119103,M,UET,20251113,Cybersecurity
+3,Nguyễn Phúc,049204007566,phuc.cntn.hcmus@gmail.com,0392125033,M,HCMUS,20040827,AI&ML
+4,Nguyễn Đình Dương,033204004115,duongkaka291@gmail.com,0960310909,M,HUST,20040129,DevOps Engineering
+5,Phan Hồng Quân,079204008165,alanworking2004@gmail.com,0371758903,M,HCMUS,20041111,Cloud Computing
+6,Nguyễn Đại,079204021285,dainnguyen1307@gmail.com,0387924585,M,HCMOU,20040713,AI&ML
+7,Nguyễn Minh Thịnh,052204007434,nguyenminhthinh26122004@gmail.com,0980185529,M,UTC,20041226,AI&ML
+8,Vũ Thế Hùng,033202006374,hungvt280102@gmail.com,0321733211,M,PTIT,20020128,DevOps Engineering
+9,Trần Gia Thế,092203008668,trangiathe2905@gmail.com,0351758786,M,UFM,20030529,Software Engineering
+10,Phạm Việt Hòa,036204002828,phamviethoa2416@gmail.com,0339614679,M,HUST,20040320,Cloud Computing
+11,Trần Như Anh Kiệt,051204009169,anhkiet10h1nd@gmail.com,0354328099,M,HCMUS,20041115,DevOps Engineering
+12,Phạm Đức Duy,040203003245,duyph6770@gmail.com,0963523728,M,DCN,20031120,Cloud Computing
+13,Nguyễn Ngọc Long,001203030885,nlong2232003@gmail.com,0353303125,M,PTIT,20030322,Cloud Computing
+14,Vũ Thái Hưng,031204004299,hungvt011004@gmail.com,0366659429,M,HUST,20041001,AI&ML
+15,Nguyễn Minh Tú,038203017779,tunguyen181103@gmail.com,0980600304,M,HUST,20031118,Cybersecurity
+16,Ngô Quang Đức,001204003613,ducngoquang275@gmail.com,0382081219,M,HUST,20040527,Cloud Computing
+17,Nguyễn Văn Sơn,001204015921,sondopin1811@gmail.com,0962452550,M,UET,20041118,Computer Vision
+18,Đào Anh Quân,033203005008,anhquan7303qqq@gmail.com,0332934640,M,HUST,20030307,AI&ML
+19,Nguyễn Thị Trang,034303013483,trangnt1317@gmail.com,0339410980,F,HUST,20030317,Software Engineering
+20,Trần Lê Mỹ Linh,070303004601,linhtlm.contact@gmail.com,0365565374,F,HUST,20030114,Cybersecurity
+21,Hồ Nguyên Lượng,001204045245,hnluong.work02@gmail.com,0970784974,M,UET,20040813,Computer Vision
+22,Lê Xuân An,030204006470,lexuanan18102004@gmail.com,0380120600,M,UET,20041018,Computer Vision
+23,Đặng Nguyễn Duy Trúc,026204001816,truc12a2cvp@gmail.com,0351882052,M,UET,20040610,Software Engineering
+24,Phùng Đức Anh,001204017879,phungducanh2511@gmail.com,0379870859,M,UET,20041125,Cybersecurity
+25,Long Hoàng Vinh,006204000857,longvinhvhbk@gmail.com,0341206120,M,UET,20040830,AI&ML
+26,Bùi Lê Hùng,034204009336,builehunghuy2004@gmail.com,0377710478,M,HUST,20040711,Data Engineering
+27,Bùi Lê Huy,034204009339,huybuile2004@gmail.com,0372181178,M,HUST,20040711,Cybersecurity
+28,Đinh Viết Quyền,040204003106,dinhvietquyen1803@gmail.com,0371674462,M,NEU,20040318,Software Engineering
+29,Nguyễn Nam,066204015879,nam7a3004@gmail.com,0969104798,M,HUST,20040430,Computer Vision
+30,Nguyễn Đức Thịnh,035203002429,ducthinhnguyen1002@gmail.com,0388566088,M,HUST,20030210,AI&ML
+31,Nguyễn Văn Khoa,027205000802,khoanv.se@gmail.com,0362564725,M,UET,20050131,Cybersecurity
+32,Dương Nguyễn Việt Anh,019203002552,dnvietanhvnuuet@gmail.com,0967792860,M,UET,20030228,Data Engineering
+33,Nguyễn Đức Anh,001204051582,ducanhchuyentincnh@gmail.com,0348041549,M,UET,20041006,Data Engineering
+34,Mạc Quang Đạt,030203008799,dat.q.mac@gmail.com,0333723348,M,PTIT,20030124,Cloud Computing
+35,Nguyễn Văn Hào,051203002082,haovan01652500861@gmail.com,0390420667,M,HCMUTE,20031009,Cloud Computing
+36,Phạm Trung Hiếu,033203006809,hieuphamsaga@gmail.com,0325861974,M,HUST,20031204,DevOps Engineering
+37,Nguyễn Đại An,031203000246,nguyendaian1945@gmail.com,0389031391,M,HUST,20030220,Software Engineering
+38,Dương Vũ Hoàng,001204029095,dvu.hoang.cv@gmail.com,0384490925,M,HUST,20040713,Cybersecurity
+39,Nguyễn Thế Nhật Minh,001204011749,minh111104@gmail.com,0328587772,M,HUST,20041111,Cybersecurity
+40,Nhâm Hoàng Đức,017203000065,hoangduc170803@gmail.com,0986630789,M,FPT,20031208,DevOps Engineering
+41,Nguyễn Hữu Tâm,042203000341,tamkadinner@gmail.com,0372959725,M,HUST,20030620,Computer Vision
+42,Bùi Khắc Chiến,066204015767,buikhacchienrmd@gmail.com,0988267526,M,HUST,20041025,Computer Vision
+43,Nguyễn Thị Hồng Nhung,051302010567,nhung210902@gmail.com,0974431001,F,HCMUT,20020921,DevOps Engineering
