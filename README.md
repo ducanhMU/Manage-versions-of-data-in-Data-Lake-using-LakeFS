@@ -90,8 +90,7 @@ lakectl fs upload --source /upload/students.csv lakefs://myrepo/main/students.cs
 ```bash
 lakectl fs upload --recursive --source /upload/ lakefs://myrepo/main/rawdata/
 ```
-
-!\[upload files]\(images/upload files.png)
+<img src="images/upload files.png" width="700"/>
 
 ### Xóa file / thư mục:
 
@@ -105,16 +104,14 @@ lakectl fs rm --recursive lakefs://myrepo/main/rawdata/
 ```bash
 lakectl commit lakefs://myrepo/dev -m "upd"
 ```
-
-!\[branch commit]\(images/branch commit.png)
+<img src="images/branch commit.png" width="700"/>
 
 ### Nhánh (branch):
 
 ```bash
 lakectl branch create lakefs://myrepo/dev --source lakefs://myrepo/main
 ```
-
-!\[create new branch]\(images/create new branch.png)
+<img src="images/create new branch.png" width="700"/>
 
 ### Tạo thư mục bằng upload file:
 
@@ -147,8 +144,7 @@ lakectl branch show lakefs://myrepo/main
 lakectl diff lakefs://myrepo/dev
 lakectl merge lakefs://myrepo/dev lakefs://myrepo/main
 ```
-
-![merge](images/merge.png)
+<img src="images/merge.png" width="700"/>
 
 ---
 
@@ -248,8 +244,7 @@ docker compose exec spark-master spark-submit \
   --packages io.lakefs:hadoop-lakefs-assembly:0.2.5 \
   /opt/bitnami/spark/jobs/vdt1.py
 ```
-
-!\[kết quả spark]\(images/spark.png)
+<img src="images/spark.png" width="700"/>
 
 > ✨ Tương tự với `jobs/vdt2.py`, `jobs/vdt3.py` nếu có logic khác (ví dụ aggregate, join, etc.)
 
