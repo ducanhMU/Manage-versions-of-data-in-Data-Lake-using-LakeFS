@@ -1,4 +1,4 @@
-# Hướng dẫn khởi động và tương tác hệ thống LakeFS + MinIO + PostgreSQL
+# Hướng dẫn khởi động và tương tác hệ thống
 
 ## 1. Khởi động hệ thống cơ bản
 
