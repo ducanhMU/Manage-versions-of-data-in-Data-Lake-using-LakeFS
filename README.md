@@ -4,162 +4,164 @@
 
 **Thành phần:**
 
-* **lakeFS** – Lớp quản lý version dữ liệu
-* **PostgreSQL** – Lưu metadata cho lakeFS
-* **MinIO** – Object store tương thích S3
+* **lakeFS**: Quản lý phiên bản dữ liệu
+* **PostgreSQL**: Lưu metadata cho lakeFS
+* **MinIO**: Object store tương thích S3
 
 **Bước thực hiện:**
 
-* Tắt tiến trình PostgreSQL đang chiếm cổng `5432` nếu có:
+```bash
+sudo systemctl stop postgresql  # Tắt PostgreSQL nếu đang chiếm cổng 5432
 
-  ```bash
-  sudo systemctl stop postgresql
-  ```
-
-* Khởi chạy hệ thống bằng Docker Compose:
-
-  ```bash
-  docker compose up -d
-  ```
+docker compose up -d           # Khởi chạy các container
+```
 
 ---
 
-## 2. Kết nối và tương tác qua CLI
+## 2. Tương tác qua CLI
 
 ### 2.1. Dùng `mc` (MinIO Client)
 
-**Thao tác:**
+```bash
+docker compose exec -it mc sh  # Vào container mc
+exit                            # Thoát
+```
 
-* Truy cập container `mc`:
-
-  ```bash
-  docker compose exec -it mc sh
-  ```
-
-* Thoát:
-
-  ```bash
-  exit
-  ```
-
-**Cài đặt kết nối tới MinIO:**
+**Thêm alias:**
 
 ```bash
 mc alias set myminio http://minio:9000 admin Admin12345
 ```
 
-**Một số lệnh thường dùng:**
+**Lệnh cơ bản:**
 
-* Liệt kê các bucket:
+```bash
+mc alias list                     # Kiểm tra alias
+mc alias remove myminio          # Xóa alias (nếu sai)
+mc mb myminio/mybucket           # Tạo bucket
+mc ls myminio                    # Liệt kê bucket
+mc ls myminio/mybucket           # Liệt kê file trong bucket
+mc cp /data/file.csv myminio/mybucket # Upload file
+```
 
-  ```bash
-  mc ls myminio
-  ```
-
-* Tạo bucket mới:
-
-  ```bash
-  mc mb myminio/mybucket
-  ```
-
-* Upload dữ liệu từ thư mục `/data` trong container `mc` lên MinIO:
-
-  ```bash
-  mc cp /data/file.csv myminio/mybucket
-  ```
-
-> 📌 *Lưu ý:* Thư mục `/data` đã được mount từ thư mục `data/` ở máy host, nơi bạn để các file cần upload.
+> ✨ **Thư mục `/data` trong container `mc` đã được mount từ `data/` host.**
 
 ---
 
-### 2.2. Dùng `lakectl` (CLI của lakeFS)
+### 2.2. Dùng `lakectl` (CLI lakeFS)
 
-**Thao tác:**
+```bash
+docker compose exec -it lakefs sh   # Vào container lakefs
+exit                                # Thoát
+lakectl --help                      # Hướng dẫn
+```
 
-* Truy cập container `lakefs`:
-
-  ```bash
-  docker compose exec -it lakefs sh
-  ```
-
-* Thoát:
-
-  ```bash
-  exit
-  ```
-
-**Ghi chú:**
-
-* Container `lakefs` đã cài sẵn `lakectl`.
-* File `lakectl.yaml` đã được mount vào `/home/lakefs/.lakectl.yaml`, chứa sẵn `access_key_id`, `secret_access_key` và `endpoint_url`, nên `lakectl` sẽ tự động kết nối khi sử dụng.
+> 🔹 File `lakectl.yaml` đã được mount sẵn, không cần đặt tay config.
 
 ---
 
-## 3. Tương tác với hệ thống lakeFS
+## 3. Tương tác với lakeFS
 
-### Tạo repository mới:
+### Tạo repo:
 
 ```bash
 lakectl repo create lakefs://myrepo s3://mybucket
 ```
 
-### Tạo nhánh (branch):
+### Xóa repo:
 
 ```bash
-lakectl branch create lakefs://myrepo@dev --source main
+lakectl repo delete lakefs://myrepo
 ```
 
-### Upload dữ liệu:
+### Xem dữ liệu trong nhánh:
 
-(Sử dụng `mc` như hướng dẫn ở mục 2.1)
+```bash
+lakectl fs ls lakefs://myrepo/main/
+```
 
-### Biến đổi dữ liệu (transform) và thao tác Git-like:
+### Upload file:
 
-* Kiểm tra sự khác biệt:
+```bash
+lakectl fs upload --source /upload/students.csv lakefs://myrepo/main/students.csv
+```
 
-  ```bash
-  lakectl diff lakefs://myrepo@dev
-  ```
+### Upload cả folder:
 
-* Commit:
+```bash
+lakectl fs upload --recursive --source /upload/ lakefs://myrepo/main/rawdata/
+```
 
-  ```bash
-  lakectl commit lakefs://myrepo@dev -m "My update"
-  ```
+### \$ <img src="images/upload files.png" alt="upload files" width="600"/>
 
-* Merge vào nhánh chính:
+### Xoá file / thư mục:
 
-  ```bash
-  lakectl merge lakefs://myrepo@dev --destination lakefs://myrepo@main
-  ```
+```bash
+lakectl fs rm lakefs://myrepo/main/students.csv
+lakectl fs rm --recursive lakefs://myrepo/main/rawdata/
+```
 
-* Rollback nếu cần:
+### Commit thay đổi:
 
-  ```bash
-  lakectl reset lakefs://myrepo@dev
-  ```
+```bash
+lakectl commit lakefs://myrepo/dev -m "upd"
+```
 
-* Tạo nhánh mới để thử nghiệm thêm:
+### \$ <img src="images/branch commit.png" alt="branch commit" width="600"/>
 
-  ```bash
-  lakectl branch create lakefs://myrepo@experiment --source main
-  ```
+### Nhánh (branch):
 
-* Có thể cấu hình hook pre-merge, post-commit,... tùy nhu cầu.
+```bash
+lakectl branch create lakefs://myrepo/dev --source lakefs://myrepo/main
+```
+
+### \$ <img src="images/create new branch.png" alt="create new branch" width="600"/>
+
+### Tạo thư mục bằng upload file:
+
+```bash
+echo "ghi chu" > issue.txt
+lakectl fs upload --source issue.txt lakefs://myrepo/dev/processed-data/issue.txt
+```
+
+### Reset thay đổi chưa commit:
+
+```bash
+lakectl branch reset lakefs://myrepo/dev
+```
+
+### Rollback commit:
+
+```bash
+lakectl branch revert lakefs://myrepo/main <commit-id>
+```
+
+### Kiểm tra commit hiện tại:
+
+```bash
+lakectl branch show lakefs://myrepo/main
+```
+
+### So sánh và merge:
+
+```bash
+lakectl diff lakefs://myrepo/dev                        # Xem thay đổi của nhánh
+lakectl merge lakefs://myrepo/dev lakefs://myrepo/main  # Merge vào main, source-dest
+```
+
+### \$ <img src="images/merge.png" alt="merge" width="600"/>
 
 ---
 
-## 4. Kết nối với Apache Spark
+## 4. Kết nối Apache Spark
 
-* Cài đặt Spark và cấu hình file `spark-defaults.conf` để sử dụng `s3a://` endpoint của MinIO.
-
-* Đảm bảo thêm dependency Hadoop AWS:
+**Phụ thuộc:**
 
 ```bash
 --packages org.apache.hadoop:hadoop-aws:3.3.2
 ```
 
-* Thiết lập các biến môi trường cần thiết:
+**Thiết lập config:**
 
 ```bash
 spark.hadoop.fs.s3a.access.key=admin
@@ -171,36 +173,33 @@ spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
 
 ---
 
-## 5. Xử lý dữ liệu với Spark
+## 5. Xử lý với Spark
 
-* Đọc dữ liệu từ bucket:
+**Đọc file:**
 
 ```python
 spark.read.csv("s3a://mybucket/file.csv", header=True)
 ```
 
-* Ghi dữ liệu sau xử lý:
+**Ghi kết quả:**
 
 ```python
 df.write.csv("s3a://mybucket/processed/")
 ```
 
-* Có thể áp dụng thêm các bước ETL, xử lý với Spark SQL, hoặc huấn luyện mô hình MLlib tại đây.
-
 ---
 
-## 6. Kết nối với Delta Lake
+## 6. Delta Lake
 
-* Cài đặt Delta Lake:
+**Phụ thuộc:**
 
 ```bash
 --packages io.delta:delta-core_2.12:2.4.0
 ```
 
-* Thiết lập Spark session với Delta:
+**Khởi tạo SparkSession:**
 
 ```python
-from pyspark.sql import SparkSession
 spark = SparkSession.builder \
     .appName("DeltaLake Integration") \
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
@@ -208,40 +207,28 @@ spark = SparkSession.builder \
     .getOrCreate()
 ```
 
----
-
-## 7. Thao tác với Delta Lake
-
-* Ghi dữ liệu dưới dạng Delta Table:
+**Ghi và đọc:**
 
 ```python
 df.write.format("delta").save("s3a://mybucket/delta-table")
-```
-
-* Đọc dữ liệu Delta:
-
-```python
 delta_df = spark.read.format("delta").load("s3a://mybucket/delta-table")
 ```
 
-* Time travel:
+**Time travel:**
 
 ```python
 spark.read.format("delta").option("versionAsOf", 0).load("s3a://mybucket/delta-table")
 ```
 
-* Merge, update, delete với Delta Lake API nâng cao.
-
 ---
 
-## Cấu trúc thư mục dự án
+## Cấu trúc dự án
 
 ```text
 demo/
-├── data/             # Thư mục chứa dữ liệu upload
+├── data/             # Dữ liệu upload
 ├── docker-compose.yml
-├── .env              # Chứa các biến môi trường như credentials
-├── lakectl.yaml      # File cấu hình cho lakectl
-└── README.md         # (file này)
+├── .env              # Thông tin credentials
+├── lakectl.yaml      # Cấu hình CLI lakectl
+└── README.md         # File hướng dẫn
 ```
-
