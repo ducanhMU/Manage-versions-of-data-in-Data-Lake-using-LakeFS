@@ -149,64 +149,89 @@ lakectl branch create lakefs://myrepo@dev --source main
 
 ---
 
-4. Kết nối với Apache Spark
+## 4. Kết nối với Apache Spark
 
-Cài đặt Spark và cấu hình file spark-defaults.conf để sử dụng s3a:// endpoint của MinIO.
+* Cài đặt Spark và cấu hình file `spark-defaults.conf` để sử dụng `s3a://` endpoint của MinIO.
 
-Đảm bảo thêm dependency Hadoop AWS:
+* Đảm bảo thêm dependency Hadoop AWS:
 
+```bash
 --packages org.apache.hadoop:hadoop-aws:3.3.2
+```
 
-Thiết lập các biến môi trường cần thiết:
+* Thiết lập các biến môi trường cần thiết:
 
+```bash
 spark.hadoop.fs.s3a.access.key=admin
 spark.hadoop.fs.s3a.secret.key=Admin12345
 spark.hadoop.fs.s3a.endpoint=http://minio:9000
 spark.hadoop.fs.s3a.path.style.access=true
 spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+```
 
-5. Xử lý dữ liệu với Spark
+---
 
-Đọc dữ liệu từ bucket:
+## 5. Xử lý dữ liệu với Spark
 
+* Đọc dữ liệu từ bucket:
+
+```python
 spark.read.csv("s3a://mybucket/file.csv", header=True)
+```
 
-Ghi dữ liệu sau xử lý:
+* Ghi dữ liệu sau xử lý:
 
+```python
 df.write.csv("s3a://mybucket/processed/")
+```
 
-Có thể áp dụng thêm các bước ETL, xử lý với Spark SQL, hoặc huấn luyện mô hình MLlib tại đây.
+* Có thể áp dụng thêm các bước ETL, xử lý với Spark SQL, hoặc huấn luyện mô hình MLlib tại đây.
 
-6. Kết nối với Delta Lake
+---
 
-Cài đặt Delta Lake:
+## 6. Kết nối với Delta Lake
 
+* Cài đặt Delta Lake:
+
+```bash
 --packages io.delta:delta-core_2.12:2.4.0
+```
 
-Thiết lập Spark session với Delta:
+* Thiết lập Spark session với Delta:
 
+```python
 from pyspark.sql import SparkSession
 spark = SparkSession.builder \
     .appName("DeltaLake Integration") \
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
     .getOrCreate()
+```
 
-7. Thao tác với Delta Lake
+---
 
-Ghi dữ liệu dưới dạng Delta Table:
+## 7. Thao tác với Delta Lake
 
+* Ghi dữ liệu dưới dạng Delta Table:
+
+```python
 df.write.format("delta").save("s3a://mybucket/delta-table")
+```
 
-Đọc dữ liệu Delta:
+* Đọc dữ liệu Delta:
 
+```python
 delta_df = spark.read.format("delta").load("s3a://mybucket/delta-table")
+```
 
-Time travel:
+* Time travel:
 
+```python
 spark.read.format("delta").option("versionAsOf", 0).load("s3a://mybucket/delta-table")
+```
 
-Merge, update, delete với Delta Lake API nâng cao.
+* Merge, update, delete với Delta Lake API nâng cao.
+
 ---
 
 ## Cấu trúc thư mục dự án
@@ -219,3 +244,4 @@ demo/
 ├── lakectl.yaml      # File cấu hình cho lakectl
 └── README.md         # (file này)
 ```
+
