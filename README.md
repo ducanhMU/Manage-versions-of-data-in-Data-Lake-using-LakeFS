@@ -249,9 +249,9 @@ docker compose exec spark-master spark-submit \
   /opt/bitnami/spark/jobs/vdt1.py
 ```
 
-!\[kết quả spark]\(images/spark result.png)
+!\[kết quả spark]\(images/spark.png)
 
-> ✨ Tương tự với `jobs/vdt2.py` nếu có logic khác (ví dụ aggregate, join, etc.)
+> ✨ Tương tự với `jobs/vdt2.py`, `jobs/vdt3.py` nếu có logic khác (ví dụ aggregate, join, etc.)
 
 ---
 
