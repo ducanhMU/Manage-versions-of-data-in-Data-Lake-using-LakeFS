@@ -94,7 +94,7 @@ lakectl fs upload --recursive --source /upload/ lakefs://myrepo/main/rawdata/
 
 ### \$ <img src="images/upload files.png" alt="upload files" width="600"/>
 
-### Xoá file / thư mục:
+### Xóa file / thư mục:
 
 ```bash
 lakectl fs rm lakefs://myrepo/main/students.csv
@@ -230,5 +230,8 @@ demo/
 ├── docker-compose.yml
 ├── .env              # Thông tin credentials
 ├── lakectl.yaml      # Cấu hình CLI lakectl
+├── images/           # Thư mục chứa ảnh minh hoạ
 └── README.md         # File hướng dẫn
 ```
+
+---
