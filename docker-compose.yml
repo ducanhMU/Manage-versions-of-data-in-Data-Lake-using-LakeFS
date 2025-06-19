@@ -41,7 +41,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - "8000:8000" # lakefs api
     env_file: .env
     environment:
       - LAKEFS_DATABASE_TYPE=postgres
@@ -71,6 +71,100 @@ services:
       - MC_HOST_minio=http://admin:${MINIO_ROOT_PASSWORD}@minio:9000
     volumes:
       - ./data:/data              # cho phép truy cập file upload
+
+  #spark master
+  spark-master:
+    image: bitnami/spark:3
+    container_name: spark-master
+    hostname: spark-master
+    depends_on:
+      - lakefs
+    env_file: .env                      # ← load .env
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_HOST=spark-master       # broadcast cho client thấy
+      - SPARK_MASTER_PORT=7077
+      - SPARK_RPC_AUTHENTICATION_ENABLED=yes
+      - SPARK_RPC_AUTHENTICATION_SECRET=my-secret
+      # Hadoop S3A (data plane)
+      - fs.s3a.endpoint=http://minio:9000
+      - fs.s3a.path.style.access=true
+      - fs.s3a.access.key=${MINIO_ROOT_USER}
+      - fs.s3a.secret.key=${MINIO_ROOT_PASSWORD}
+      - fs.s3a.connection.ssl.enabled=false
+      # lakeFS FileSystem (metadata plane)
+      - fs.lakefs.impl=io.lakefs.LakeFSFileSystem
+      - fs.lakefs.endpoint=http://lakefs:8000/api/v1
+      - fs.lakefs.access.key=${LAKEFS_ACCESS_KEY}
+      - fs.lakefs.secret.key=${LAKEFS_SECRET_KEY}
+    volumes:
+      - ./jobs:/opt/bitnami/spark/jobs:ro
+      - ./jars/io-lakefs-hadoop-lakefs-assembly-0.2.5.jar:/opt/bitnami/spark/jars/io-lakefs-hadoop-lakefs-assembly-0.2.5.jar:ro  
+
+   # spark worker
+  spark-worker:
+    image: bitnami/spark:3
+    container_name: spark-worker
+    hostname: spark-worker
+    depends_on:
+      - spark-master
+    env_file: .env
+    ports:
+      - "8081:8081"
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1g
+      - SPARK_WORKER_HOSTNAME=spark-worker
+      # Thêm các dòng sau cho xác thực RPC
+      - SPARK_RPC_AUTHENTICATION_ENABLED=yes
+      - SPARK_RPC_AUTHENTICATION_SECRET=my-secret
+      # Hadoop S3A (data plane)
+      - fs.s3a.endpoint=http://minio:9000
+      - fs.s3a.path.style.access=true
+      - fs.s3a.access.key=${MINIO_ROOT_USER}
+      - fs.s3a.secret.key=${MINIO_ROOT_PASSWORD}
+      - fs.s3a.connection.ssl.enabled=false
+      # lakeFS FileSystem (metadata plane)
+      - fs.lakefs.impl=io.lakefs.LakeFSFileSystem
+      - fs.lakefs.endpoint=http://lakefs:8000/api/v1
+      - fs.lakefs.access.key=${LAKEFS_ACCESS_KEY}
+      - fs.lakefs.secret.key=${LAKEFS_SECRET_KEY}
+    volumes:
+      - ./jobs:/opt/bitnami/spark/jobs:ro
+      - ./jars/io-lakefs-hadoop-lakefs-assembly-0.2.5.jar:/opt/bitnami/spark/jars/io-lakefs-hadoop-lakefs-assembly-0.2.5.jar:ro
+  # spark-worker:
+  #   image: bitnami/spark:3
+  #   container_name: spark-worker
+  #   hostname: spark-worker
+  #   depends_on:
+  #     - spark-master
+  #   env_file: .env                      # ← load .env
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark-master:7077
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_WORKER_MEMORY=1g
+  #     - SPARK_WORKER_HOSTNAME=spark-worker     # ← thêm
+  #     # Hadoop S3A (data plane)
+  #     - fs.s3a.endpoint=http://lakefs:8000
+  #     - fs.s3a.path.style.access=true
+  #     - fs.s3a.access.key=${MINIO_ROOT_USER}
+  #     - fs.s3a.secret.key=${MINIO_ROOT_PASSWORD}
+  #     # lakeFS FileSystem (metadata plane)
+  #     - fs.lakefs.impl=io.lakefs.LakeFSFileSystem
+  #     - fs.lakefs.endpoint=http://lakefs:8000/api/v1
+  #     - fs.lakefs.access.key=${LAKEFS_ACCESS_KEY}
+  #     - fs.lakefs.secret.key=${LAKEFS_SECRET_KEY}
+  #   volumes:
+  #     - ./jobs:/opt/bitnami/spark/jobs:ro
+  #     - ./jars/io-lakefs-hadoop-lakefs-assembly-0.2.5.jar:/opt/bitnami/spark/jars/io-lakefs-hadoop-lakefs-assembly-0.2.5.jar:ro
 
 volumes:
   minio-data:
