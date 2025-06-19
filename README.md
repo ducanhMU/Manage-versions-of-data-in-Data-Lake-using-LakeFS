@@ -149,28 +149,64 @@ lakectl branch create lakefs://myrepo@dev --source main
 
 ---
 
-## 4. Kết nối với Apache Spark
+4. Kết nối với Apache Spark
 
-> (Hướng dẫn sẽ cập nhật khi Spark được tích hợp)
+Cài đặt Spark và cấu hình file spark-defaults.conf để sử dụng s3a:// endpoint của MinIO.
 
----
+Đảm bảo thêm dependency Hadoop AWS:
 
-## 5. Xử lý dữ liệu với Spark
+--packages org.apache.hadoop:hadoop-aws:3.3.2
 
-> (Hướng dẫn xử lý ETL, MLlib với Spark)
+Thiết lập các biến môi trường cần thiết:
 
----
+spark.hadoop.fs.s3a.access.key=admin
+spark.hadoop.fs.s3a.secret.key=Admin12345
+spark.hadoop.fs.s3a.endpoint=http://minio:9000
+spark.hadoop.fs.s3a.path.style.access=true
+spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
 
-## 6. Kết nối với Delta Lake
+5. Xử lý dữ liệu với Spark
 
-> (Hướng dẫn cấu hình Spark để sử dụng Delta Lake kết hợp lakeFS)
+Đọc dữ liệu từ bucket:
 
----
+spark.read.csv("s3a://mybucket/file.csv", header=True)
 
-## 7. Thao tác với Delta Lake
+Ghi dữ liệu sau xử lý:
 
-> (Tạo bảng Delta, ghi/đọc dữ liệu có version, time travel...)
+df.write.csv("s3a://mybucket/processed/")
 
+Có thể áp dụng thêm các bước ETL, xử lý với Spark SQL, hoặc huấn luyện mô hình MLlib tại đây.
+
+6. Kết nối với Delta Lake
+
+Cài đặt Delta Lake:
+
+--packages io.delta:delta-core_2.12:2.4.0
+
+Thiết lập Spark session với Delta:
+
+from pyspark.sql import SparkSession
+spark = SparkSession.builder \
+    .appName("DeltaLake Integration") \
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
+    .getOrCreate()
+
+7. Thao tác với Delta Lake
+
+Ghi dữ liệu dưới dạng Delta Table:
+
+df.write.format("delta").save("s3a://mybucket/delta-table")
+
+Đọc dữ liệu Delta:
+
+delta_df = spark.read.format("delta").load("s3a://mybucket/delta-table")
+
+Time travel:
+
+spark.read.format("delta").option("versionAsOf", 0).load("s3a://mybucket/delta-table")
+
+Merge, update, delete với Delta Lake API nâng cao.
 ---
 
 ## Cấu trúc thư mục dự án
